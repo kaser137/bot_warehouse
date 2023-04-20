@@ -54,12 +54,7 @@ Renting a small warehouse will solve your problem.""")
             f'for continue type /next')
         await msg.answer(f'glad to see you {emojize(":eyes:")}')
     elif type(status) is int:
-        # if call.message:
-        #     await call.message.delete()
-        await msg.answer(f'hi {msg.from_user.first_name} you have {status} orders', reply_markup=m.start_markup)
-    else:
-        await msg.answer(f'Hello dear {msg.from_user.first_name},\nsorry, but you are not registered')
-        await msg.answer('Wanna join? type /registration')
+        await msg.answer(f'Hi {msg.from_user.first_name}.', reply_markup=m.client_start_markup)
 
 
 # end start division___________________________________________________________________________________
@@ -75,12 +70,12 @@ def del_bot_mes(chat_id, mes_id, info_mes_id):
         bot.delete_message(chat_id, info_mes_id)
 
 
-@dp.callback_query_handler(text="faq")
+@dp.callback_query_handler(text='faq')
 async def callback_inline(call: types.CallbackQuery):
     global previous_markup
     await call.message.delete()
     previous_markup = 'start_markup'
-    await call.message.answer('Условия хранения (FAQ)', reply_markup=m.exit_markup)
+    await call.message.answer('Storage conditions... Blah blah blah ....', reply_markup=m.exit_markup)
     await call.answer()
 
 
@@ -88,14 +83,10 @@ async def callback_inline(call: types.CallbackQuery):
 async def callback_inline(call: types.CallbackQuery):
     await call.message.delete()
     if previous_markup == 'start_markup':
-        await call.message.answer('Главное меню', reply_markup=m.start_markup)
+        await call.message.answer('Главное меню', reply_markup=m.client_start_markup)
+    # if previous_markup == 'sdfsdf_markup':
+    #     await call.message.answer
     await call.answer()
-
-
-@dp.message_handler(commands=['faq'])
-async def show_faq(msg: types.Message):
-    chat_id = msg.from_user.id
-    await msg.answer('Storage conditions... Blah blah blah ....')
 
 
 @dp.message_handler(commands=['registration'])

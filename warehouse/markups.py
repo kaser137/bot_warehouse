@@ -1,12 +1,14 @@
 from aiogram import types
 
 
-start_markup = types.InlineKeyboardMarkup(row_width=1)
-start_markup_btn1 = types.InlineKeyboardButton('Условия хранения (FAQ)', callback_data='faq')
-start_markup_btn2 = types.InlineKeyboardButton('Сдать вещи на хранение', callback_data='add')
-start_markup_btn3 = types.InlineKeyboardButton('Мои боксы', callback_data='boxes')
-start_markup_exit = types.InlineKeyboardButton('Выход', callback_data='exit')
-start_markup.add(start_markup_btn1, start_markup_btn2, start_markup_btn3, start_markup_exit)
+client_start_markup = types.InlineKeyboardMarkup(row_width=1)
+client_start_markup_buttons = [
+    types.InlineKeyboardButton('Условия хранения (FAQ)', callback_data='faq'),
+    types.InlineKeyboardButton('Сдать вещи на хранение', callback_data='add'),
+    types.InlineKeyboardButton('Мои боксы', callback_data='boxes'),
+    types.InlineKeyboardButton('Выход', callback_data='exit'),
+    ]
+client_start_markup.add(*client_start_markup_buttons)
 
 exit_markup = types.InlineKeyboardMarkup(row_width=1)
 exit_markup_btn = types.InlineKeyboardButton('Назад', callback_data='exit')
