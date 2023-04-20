@@ -3,6 +3,8 @@ import dotenv
 import datetime
 import asyncio
 import funcs
+import markups as m
+import time
 from emoji import emojize
 from aiogram import Bot, types, Dispatcher
 from aiogram.dispatcher import FSMContext
@@ -12,6 +14,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from asgiref.sync import sync_to_async
 from pathlib import Path
 
+PAUSE = 0.1
 BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv.load_dotenv(Path(BASE_DIR, 'venv', '.env'))
 token = os.environ['BOT_TOKEN']
@@ -44,7 +47,7 @@ Renting a small warehouse will solve your problem.""")
             f'for continue type /next')
         await msg.answer(f'glad to see you {emojize(":eyes:")}')
     elif type(status) is int:
-        await msg.answer(f'hi {msg.from_user.first_name} you have {status} orders')
+        await msg.answer(f'hi {msg.from_user.first_name} you have {status} orders', reply_markup=m.start_markup)
     else:
         await msg.answer(f'Hello dear {msg.from_user.first_name},\nsorry, but you are not registered')
         await msg.answer('Wanna join? type /registration')
@@ -53,6 +56,45 @@ Renting a small warehouse will solve your problem.""")
 # end start division___________________________________________________________________________________
 
 # client div____________________________________________________________________________________________
+
+# функция удаления команды пользователя и сообщения бота через время = PAUSE
+def del_bot_mes(chat_id, mes_id, info_mes_id):
+    time.sleep(PAUSE)
+    bot.delete_message(chat_id, mes_id)
+    if info_mes_id:
+        time.sleep(PAUSE)
+        bot.delete_message(chat_id, info_mes_id)
+
+
+@dp.callback_query_handler(func=lambda callback_query: True)
+async def callback_inline(call):
+    global previous_markup
+    global previous_message
+    # global info_message
+    # try:
+    if call.message:
+        if call.data == "faq":
+            del_bot_mes(call.message.chat.id, call.message.message_id, 0)
+            bot.send_message(call.message.chat.id, "Условия хранения (FAQ)", reply_markup=m.exit_markup)
+            previous_markup = 'start_markup'
+            previous_message = 0
+        if call.data == "help":
+            # print(config.help)
+            # bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id,
+            #                              reply_markup='')  # удаляем кнопки у последнего сообщения
+            del_bot_mes(call.message.chat.id, call.message.message_id, 0)
+            previous_markup = 'start_markup'
+            previous_message = (bot.send_message(call.message.chat.id, 'help......'))  # .message_id
+            bot.send_message(call.message.chat.id, "Помощь", reply_markup=m.exit_markup)
+
+
+
+@dp.message_handler(commands=['faq'])
+async def show_faq(msg: types.Message):
+    chat_id = msg.from_user.id
+    await msg.answer('Storage conditions... Blah blah blah ....')
+
+
 @dp.message_handler(commands=['registration'])
 async def propose_registration(msg: types.Message):
     chat_id = msg.from_user.id
