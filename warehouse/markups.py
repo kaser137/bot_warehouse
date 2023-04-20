@@ -1,7 +1,7 @@
 from aiogram import types
 
 
-start_markup = types.InlineKeyboardMarkup(row_width=2)
+start_markup = types.InlineKeyboardMarkup(row_width=1)
 start_markup_btn1 = types.InlineKeyboardButton('Условия хранения (FAQ)', callback_data='faq')
 start_markup_btn2 = types.InlineKeyboardButton('Сдать вещи на хранение', callback_data='add')
 start_markup_btn3 = types.InlineKeyboardButton('Мои боксы', callback_data='boxes')

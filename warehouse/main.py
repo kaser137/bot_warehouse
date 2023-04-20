@@ -6,7 +6,8 @@ import funcs
 import markups as m
 import time
 from emoji import emojize
-from aiogram import Bot, types, Dispatcher
+import logging
+from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -22,7 +23,11 @@ owner_id = os.environ['OWNER_ID']
 bot = Bot(token=token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
+logging.basicConfig(level=logging.INFO)
 today = datetime.date.today()
+
+previous_markup = None
+previous_message = None
 
 
 class UserState(StatesGroup):
@@ -32,6 +37,8 @@ class UserState(StatesGroup):
 
 
 # start division____________________________________________________________
+# @dp.callback_query_handler(text="start")
+# async def callback_inline(call: types.CallbackQuery):
 @dp.message_handler(lambda msg: not msg.text[0] == '/' or msg.text == '/start')
 async def start_conversation(msg: types.Message):
     await msg.answer("""Welcome to the Self Storage service!
@@ -47,6 +54,8 @@ Renting a small warehouse will solve your problem.""")
             f'for continue type /next')
         await msg.answer(f'glad to see you {emojize(":eyes:")}')
     elif type(status) is int:
+        # if call.message:
+        #     await call.message.delete()
         await msg.answer(f'hi {msg.from_user.first_name} you have {status} orders', reply_markup=m.start_markup)
     else:
         await msg.answer(f'Hello dear {msg.from_user.first_name},\nsorry, but you are not registered')
@@ -66,27 +75,21 @@ def del_bot_mes(chat_id, mes_id, info_mes_id):
         bot.delete_message(chat_id, info_mes_id)
 
 
-@dp.callback_query_handler(func=lambda callback_query: True)
-async def callback_inline(call):
+@dp.callback_query_handler(text="faq")
+async def callback_inline(call: types.CallbackQuery):
     global previous_markup
-    global previous_message
-    # global info_message
-    # try:
-    if call.message:
-        if call.data == "faq":
-            del_bot_mes(call.message.chat.id, call.message.message_id, 0)
-            bot.send_message(call.message.chat.id, "Условия хранения (FAQ)", reply_markup=m.exit_markup)
-            previous_markup = 'start_markup'
-            previous_message = 0
-        if call.data == "help":
-            # print(config.help)
-            # bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id,
-            #                              reply_markup='')  # удаляем кнопки у последнего сообщения
-            del_bot_mes(call.message.chat.id, call.message.message_id, 0)
-            previous_markup = 'start_markup'
-            previous_message = (bot.send_message(call.message.chat.id, 'help......'))  # .message_id
-            bot.send_message(call.message.chat.id, "Помощь", reply_markup=m.exit_markup)
+    await call.message.delete()
+    previous_markup = 'start_markup'
+    await call.message.answer('Условия хранения (FAQ)', reply_markup=m.exit_markup)
+    await call.answer()
 
+
+@dp.callback_query_handler(text="exit")
+async def callback_inline(call: types.CallbackQuery):
+    await call.message.delete()
+    if previous_markup == 'start_markup':
+        await call.message.answer('Главное меню', reply_markup=m.start_markup)
+    await call.answer()
 
 
 @dp.message_handler(commands=['faq'])
