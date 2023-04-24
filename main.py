@@ -273,7 +273,7 @@ async def output_order_attributes(cb: types.CallbackQuery, state: FSMContext):
         await state.update_data(id=int(cb.data[1:]))
         order = {}
         for order in orders:
-            if order['id'] == cb.data[1:]:
+            if order['id'] == int(cb.data[1:]):
                 order = order
                 break
         await state.update_data(order2=order)
@@ -394,7 +394,7 @@ async def output_order_attributes(cb: types.CallbackQuery, state: FSMContext):
         await state.update_data(id=int(cb.data[1:]))
         order = {}
         for order in orders:
-            if order['id'] == cb.data[1:]:
+            if order['id'] == int(cb.data[1:]):
                 order = order
                 break
         for key in order:
@@ -447,7 +447,7 @@ async def output_order_attributes(cb: types.CallbackQuery, state: FSMContext):
         await state.update_data(id=int(cb.data[1:]))
         order = {}
         for order in orders:
-            if order['id'] == cb.data[1:]:
+            if order['id'] == int(cb.data[1:]):
                 order = order
                 break
         for key in order:
@@ -497,7 +497,7 @@ async def output_client_attributes(cb: types.CallbackQuery, state: FSMContext):
         await state.update_data(id=int(cb.data[1:]))
         client = {}
         for client in clients:
-            if client['id'] == cb.data[1:]:
+            if client['id'] == int(cb.data[1:]):
                 client = client
                 break
         for key in client:
