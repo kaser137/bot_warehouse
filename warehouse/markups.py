@@ -80,6 +80,7 @@ owner_start_markup_buttons = [
     types.InlineKeyboardButton('Clients', callback_data='clients'),
     types.InlineKeyboardButton('Orders', callback_data='orders'),
     types.InlineKeyboardButton('Expired orders', callback_data='exp_orders'),
+    types.InlineKeyboardButton('Count clicks', callback_data='clicks'),
     types.InlineKeyboardButton('Exit', callback_data='exit_owner'),
 ]
 owner_start_markup.add(*owner_start_markup_buttons)

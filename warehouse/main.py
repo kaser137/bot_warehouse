@@ -556,6 +556,13 @@ async def message_start_owner(msg: types.Message, state: FSMContext):
     await bot.send_message(data['own_id'], f'message from {msg.from_user.username}:\n{msg.text}',
                            reply_markup=m.exit_owner)
     await msg.answer('exit', reply_markup=m.exit_markup)
+    await state.finish()
+
+
+@dp.callback_query_handler(Text(['clicks']))
+async def count_clicks(cb: types.CallbackQuery):
+    clicks = await sync_to_async(funcs.count_clicks)()
+    await cb.message.answer(clicks, reply_markup=m.exit_owner)
 
 
 # ======= SENTINEL BLOCK (START) ============================================================================

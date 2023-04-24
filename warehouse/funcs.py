@@ -1,6 +1,11 @@
 import datetime
 import os
-from aiogram import types
+import os
+import dotenv
+import requests
+import argparse
+from urllib.parse import urlparse
+from pathlib import Path
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'warehouse.settings')
 import django
@@ -10,6 +15,18 @@ django.setup()
 from admin_warehouse.models import Client, Storage, Order, Owner, Cost
 from email_validate import validate
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+dotenv.load_dotenv(Path(BASE_DIR, 'venv', '.env'))
+url = os.environ['BITLINK']
+token = os.environ['BITLY_TOKEN']
+
+def count_clicks(token=token, url=url):
+    parsed_url = urlparse(url)
+    bitlink = '{}{}'.format(parsed_url.netloc, parsed_url.path)
+    response = requests.get(f"https://api-ssl.bitly.com/v4/bitlinks/{bitlink}/clicks/summary",
+                            headers={"Authorization": token})
+    response.raise_for_status()
+    return response.json()['total_clicks']
 
 def get_terms_orders():
     orders30 = Order.objects.filter(date_closed=datetime.date.today() + datetime.timedelta(days=30)).exclude(
@@ -74,7 +91,7 @@ def make_order(mass=None, sq=None, period=None, amount=None, tg_account=None):
                          date_closed=date_closed, amount=amount)
 
 
-def get_client_orders(tg_account, id_client = None):
+def get_client_orders(tg_account, id_client=None):
     client = Client.objects.get(tg_account=tg_account)
     orders = Order.objects.filter(client=client)
     serialized_orders = []
@@ -84,6 +101,7 @@ def get_client_orders(tg_account, id_client = None):
                                 id=order.id)
         serialized_orders.append(serialized_order)
     return serialized_orders
+
 
 def get_order(id_order):
     order = Order.objects.filter(id=id_order)[0]
