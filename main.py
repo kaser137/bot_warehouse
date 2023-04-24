@@ -74,7 +74,6 @@ Renting a small warehouse will solve your problem.""")
 @dp.message_handler(state=[UserState.mass, UserState.sq, UserState.standby, UserState.order, UserState.order_own,
                            UserState.order_exp, UserState.customers])
 async def incorrect_input_proceeding(msg: types.Message):
-    # await msg.delete()
     if await sync_to_async(funcs.identify_user)(msg.from_user.username) == 'owner':
         await msg.answer('Main menu', reply_markup=m.owner_start_markup)
     else:
@@ -88,12 +87,6 @@ async def incorrect_input_proceeding(msg: types.Message):
         await msg.answer('Main menu', reply_markup=m.owner_start_markup)
     else:
         await msg.answer('Main menu', reply_markup=m.client_start_markup)
-
-#
-# @dp.callback_query_handler(text='faq', state='*')
-# async def faq_proceeding(cb: types.CallbackQuery):
-#     await cb.message.answer('https://telegra.ph/Usloviya-hraneniya-04-22', reply_markup=m.exit_markup)
-#     await cb.answer()
 
 
 @dp.callback_query_handler(text="exit", state=[UserState, None])
@@ -303,7 +296,7 @@ async def manage_order(cb: types.CallbackQuery, state: FSMContext):
         qr_str = ''
         for key in order:
             qr_str += f' {key}: {order[key]}.'
-        qr_dic[cb.from_user.username]=qr_str
+        qr_dic[cb.from_user.username] = qr_str
         for owner_id in owners_ids:
             await bot.send_message(owner_id, f'Client {cb.from_user.username} wanna get access to warehouse,\n{qr_str}',
                                    reply_markup=m.owner_send_qr)
@@ -323,7 +316,7 @@ async def manage_order(cb: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(Text(['qr']), state='*')
-async def send_qr(cb: types.CallbackQuery, state: FSMContext):
+async def send_qr(cb: types.CallbackQuery):
     qr_str = qr_dic[cb.message.text.split()[1]]
     await sync_to_async(funcs.get_qr)(qr_str)
     cl_id = client_id[cb.message.text.split()[1]]
@@ -346,17 +339,14 @@ async def message_start_client(cb: types.CallbackQuery):
 async def message_start_client(msg: types.Message, state: FSMContext):
     client_id[msg.from_user.username] = msg.from_user.id
     for owner_id in owners_ids:
-        # await bot.send_message(owner_id, 'exit', reply_markup=m.exit_owner)
         await bot.send_message(owner_id, f'message from {msg.from_user.username}:\n{msg.text}',
                                reply_markup=m.owner_reply_message)
-    # await msg.answer('exit', reply_markup=m.exit_markup)
     await state.finish()
 
 
 @dp.callback_query_handler(Text(['reply']), state='*')
 async def message_start_client(cb: types.CallbackQuery, state: FSMContext):
     cl_id = client_id[cb.message.text.split()[2][:-1]]
-    # await cb.message.answer('exit', reply_markup=m.exit_owner)
     for owner_id in owners_ids:
         await bot.send_message(owner_id, f'input your reply for {cb.message.text.split()[2]}')
     await UserState.msg.set()
@@ -369,7 +359,6 @@ async def message_start_client(msg: types.Message, state: FSMContext):
     cl_id = await state.get_data()
     await bot.send_message(cl_id['client_id'], f'Message from {msg.from_user.username}:\n{msg.text}',
                            reply_markup=m.exit_markup)
-    # await msg.answer('exit', reply_markup=m.exit_owner)
     await state.finish()
 
 
@@ -541,7 +530,6 @@ async def manage_order(cb: types.CallbackQuery, state: FSMContext):
 async def message_start_owner(cb: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     client_id[cb.from_user.username] = data['chat_id']
-    # await cb.message.answer('exit', reply_markup=m.exit_markup)
     await cb.message.answer('Input your message', reply_markup=m.exit_owner)
     await UserState.mail_ow.set()
     await cb.answer()
@@ -551,8 +539,6 @@ async def message_start_owner(cb: types.CallbackQuery, state: FSMContext):
 async def message_start_owner(msg: types.Message):
     chat_id = client_id[msg.from_user.username]
     owner_id[msg.from_user.username] = msg.from_user.id
-    # await msg.answer('exit', reply_markup=m.exit_owner)
-    # await bot.send_message(chat_id, 'exit', reply_markup=m.exit_markup)
     await bot.send_message(chat_id, f'Message from {msg.from_user.username}:\n{msg.text}', reply_markup=m.owner_reply)
     await UserState.standby.set()
 
@@ -571,7 +557,14 @@ async def message_start_owner(msg: types.Message, state: FSMContext):
     data = await state.get_data()
     await bot.send_message(data['own_id'], f'Message from {msg.from_user.username}:\n{msg.text}',
                            reply_markup=m.exit_owner)
-    # await msg.answer('exit', reply_markup=m.exit_markup)
+    await msg.answer('exit', reply_markup=m.exit_markup)
+    await state.finish()
+
+
+@dp.callback_query_handler(Text(['clicks']), state='*')
+async def count_clicks(cb: types.CallbackQuery):
+    clicks = await sync_to_async(funcs.count_clicks)()
+    await cb.message.answer(clicks, reply_markup=m.exit_owner)
 
 
 # ======= SENTINEL BLOCK (START) ============================================================================
@@ -600,3 +593,13 @@ async def on_startup(_):
 
 
 executor.start_polling(dp, skip_updates=False, on_startup=on_startup)
+
+# НАДО ПОТОМ УДАЛИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+'''
+SECRET_KEY = 'django-insecure-*s_#s-4bd2s5u*@h=(9#88wt^gl!7ln-u%g_pkq^d&c2sc13df'
+DEBUG = True
+BOT_TOKEN = 6277504232:AAGya9EHaLsRzb4CwyGot6z5NYRm1eMfXGY
+DJANGO_SETTINGS_MODULE = 'warehouse.settings'
+OWNERS_IDS = 5636748493 5517044537
+BITLY_TOKEN=ac1896ed751e064e620b565b6c5cabfb041d9bfa
+BITLINK=https://bit.ly/41TcfSs'''
