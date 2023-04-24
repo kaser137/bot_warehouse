@@ -4,3 +4,4 @@ asgiref~=3.6.0
 Django~=4.2
 emoji~=2.2.0
 email-validate==1.1.2
+qrcode==7.4.2

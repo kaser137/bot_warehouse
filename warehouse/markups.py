@@ -3,10 +3,10 @@ from aiogram import types
 # ======= CLIENT BLOCK (START) ==============================================================================
 client_start_markup = types.InlineKeyboardMarkup(row_width=2)
 client_start_markup_buttons = [
-    types.InlineKeyboardButton('Storage conditions (FAQ)', callback_data='faq'),
+    types.InlineKeyboardButton('Storage conditions (FAQ)', url='https://telegra.ph/Usloviya-hraneniya-04-22'),
     types.InlineKeyboardButton('Put things in storage', callback_data='put_things'),
     types.InlineKeyboardButton('My boxes', callback_data='boxes'),
-    types.InlineKeyboardButton('Message for owner', callback_data='msg'),
+    types.InlineKeyboardButton('Message for owner', callback_data='msg_for_owner'),
     types.InlineKeyboardButton('Exit', callback_data='exit'),
 ]
 client_start_markup.add(*client_start_markup_buttons)
