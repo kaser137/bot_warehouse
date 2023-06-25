@@ -594,12 +594,3 @@ async def on_startup(_):
 
 executor.start_polling(dp, skip_updates=False, on_startup=on_startup)
 
-# НАДО ПОТОМ УДАЛИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-'''
-SECRET_KEY = 'django-insecure-*s_#s-4bd2s5u*@h=(9#88wt^gl!7ln-u%g_pkq^d&c2sc13df'
-DEBUG = True
-BOT_TOKEN = 6277504232:AAGya9EHaLsRzb4CwyGot6z5NYRm1eMfXGY
-DJANGO_SETTINGS_MODULE = 'warehouse.settings'
-OWNERS_IDS = 5636748493 5517044537
-BITLY_TOKEN=ac1896ed751e064e620b565b6c5cabfb041d9bfa
-BITLINK=https://bit.ly/41TcfSs'''
