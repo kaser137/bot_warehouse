@@ -1,19 +1,24 @@
 import dotenv
 import os
+import sys
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 # BASE_DIR = Path(__file__).resolve().parent.parent
 
-# dotenv.load_dotenv(Path(BASE_DIR.parent, 'venv', '.env'))
-# SECRET_KEY = os.environ['SECRET_KEY']
-SECRET_KEY = 'django-insecure-$sf)^!uu@ln90k6#wh@-jvm9q9%g-cs2yq998war!w5b1%(&=#'
-# DEBUG = os.environ['DEBUG']
+dotenv.load_dotenv(Path(BASE_DIR.parent, '.env'))
+SECRET_KEY = os.environ['SECRET_KEY']
+# SECRET_KEY = 'django-insecure-$sf)^!uu@ln90k6#wh@-jvm9q9%g-cs2yq998war!w5b1%(&=#'
 
-DEBUG = False
 
-ALLOWED_HOSTS = []
+# DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True
+
+# DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -103,9 +108,10 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+'https://docs.djangoproject.com/en/4.2/howto/static-files/'
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
